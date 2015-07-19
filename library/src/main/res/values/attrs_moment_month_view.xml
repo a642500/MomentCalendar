@@ -1,8 +1,9 @@
 <resources>
     <declare-styleable name="MomentMonthView">
-        <attr name="exampleString" format="string"/>
-        <attr name="exampleDimension" format="dimension"/>
-        <attr name="exampleColor" format="color"/>
-        <attr name="exampleDrawable" format="color|reference"/>
+        <attr name="dayOfWeekTitle" format="reference"/>
+        <attr name="dayTextSize" format="dimension"/>
+        <attr name="titleTextSize" format="dimension"/>
+        <attr name="textColorStateList" format="color"/>
+        <attr name="state_today" format="boolean"/>
     </declare-styleable>
 </resources>

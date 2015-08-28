@@ -2,63 +2,198 @@ package co.yishun.onemoment.momentcalendar;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Build;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * TODO: document your custom view class.
  */
 public class MomentMonthView extends AdapterView<MonthAdapter> {
-    public static final int DAY_NUM_OF_WEEK = 7;
-    private String[] dayOfWeekTitle;
-    private boolean ignoreLandscape = false;
+    private MonthAdapter mAdapter;
 
+    private int mItemLength = 0;
 
-    private int textColorStateList = R.color.day_text_color;
-    private int bgColorStateList = R.drawable.day_bg_selector;
+    private int GRAY = getResources().getColor(R.color.colorGray);
+    private int ORANGE = getResources().getColor(R.color.colorOrange);
 
-    private float dayTextSize = 12;
-    private float titleTextSize = 12;
+    private Paint mWeekTitlePaint;
+    private String[] mWeekTitleArray;
+    private float mWeekTitlePadding = getResources().getDimension(R.dimen.MMV_weekTitlePadding);
+    private float mWeekTitleSize = getResources().getDimension(R.dimen.MMV_weekTitleSize);
+    private Rect mWeekTextMeasureRect;
+    private float mWeekTitleHeight;
 
-    private float dayTextHeight;
-    private float dayViewLength;
+    private Paint mMonthTitlePaint;
+    private String mMonthTitle;
+    private float mMonthTitlePadding = getResources().getDimension(R.dimen.MMV_monthTitlePadding);
+    private float mMonthTitleSize = getResources().getDimension(R.dimen.MMV_monthTitleSize);
+    private Rect mMonthTextMeasureRect;
+    private float mMonthTitleHeight;
 
+    private Calendar mCalendar;
+    private int mWeekNum;
+    // for DayView
+    private LayoutParams mItemParams;
 
-    Calendar mMonth = Calendar.getInstance();
-
-    public MomentMonthView(Context context) {
+    public MomentMonthView(Context context, Calendar calendar) {
         super(context);
+        mCalendar = calendar;
+        init();
     }
 
     public MomentMonthView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mCalendar = Calendar.getInstance();
+        init();
     }
 
     public MomentMonthView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.mCalendar = Calendar.getInstance();
+        init();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP) public MomentMonthView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public MomentMonthView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        this.mCalendar = Calendar.getInstance();
+        init();
     }
 
-    @Override public MonthAdapter getAdapter() {
+    public void init() {
+        setWillNotDraw(false);
+        mMonthTitle = new SimpleDateFormat("yyyy/MM", Locale.getDefault()).format(mCalendar.getTime());
+        mMonthTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        mMonthTitlePaint.setTextSize(mMonthTitleSize);
+        mMonthTitlePaint.setColor(ORANGE);
+        mMonthTextMeasureRect = new Rect();
+
+        mWeekTitleArray = getResources().getStringArray(R.array.day_of_week);
+        mWeekTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        mWeekTitlePaint.setTextSize(mWeekTitleSize);
+        mWeekTitlePaint.setColor(GRAY);
+        mWeekTextMeasureRect = new Rect();
+
+        mWeekNum = mCalendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
+
+        mItemParams = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        if (isInEditMode()) {
+            setAdapter(new MonthAdapter(mCalendar) {
+                @Override
+                public void onBindView(Calendar calendar, DayView dayView) {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int rw = MeasureSpec.getSize(widthMeasureSpec);
+//        int rh = MeasureSpec.getSize(heightMeasureSpec);
+        int w = rw - getPaddingLeft() - getPaddingRight();
+
+        mItemLength = w / 7;
+        mMonthTitlePaint.getTextBounds(mMonthTitle, 0, mMonthTitle.length(), mMonthTextMeasureRect);
+        mMonthTitleHeight = mMonthTextMeasureRect.height() + mMonthTitlePadding * 2;
+        mWeekTitlePaint.getTextBounds(mWeekTitleArray[0], 0, 1, mWeekTextMeasureRect);
+        mWeekTitleHeight = mWeekTextMeasureRect.height() + mWeekTitlePadding * 2;
+
+        float h = mItemLength * mWeekNum + mMonthTitleHeight + mWeekTitleHeight + getPaddingTop() + getPaddingBottom();
+
+        mItemParams.width = mItemLength;
+        mItemParams.height = mItemLength;
+
+        setMeasuredDimension(w, (int) h);
+    }
+
+    @Override
+    public boolean isInEditMode() {
+        return true;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+
+        if (mAdapter == null) {
+            return;
+        }
+
+        if (getChildCount() == 0) {
+            int position = 0;
+            while (position < mAdapter.getCount()) {
+                View child = mAdapter.getView(position, null, this);
+                addViewInLayout(child, -1, mItemParams, true);
+                child.measure(MeasureSpec.EXACTLY | mItemLength, MeasureSpec.EXACTLY);
+                position++;
+            }
+        }
+
+        positionItems();
+
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        float ox = canvas.getWidth() / 2 - mMonthTextMeasureRect.width() / 2;
+        float oy = mMonthTextMeasureRect.height() + mMonthTitlePadding;
+        canvas.drawText(mMonthTitle, ox, oy, mMonthTitlePaint);
+
+        float y = mMonthTitleHeight + mWeekTextMeasureRect.height() + mWeekTitlePadding;
+        for (int i = 0; i < mWeekTitleArray.length; i++) {
+            float width = mWeekTitlePaint.measureText(mWeekTitleArray[i]);
+            canvas.drawText(mWeekTitleArray[i], i * mItemLength + (mItemLength - width) / 2, y, mWeekTitlePaint);
+        }
+    }
+
+    /**
+     * Positions the children at the "correct" positions
+     */
+    private void positionItems() {
+        for (int index = 0; index < getChildCount(); index++) {
+            View child = getChildAt(index);
+            mCalendar.set(Calendar.DAY_OF_MONTH, index + 1);
+            int column = mCalendar.get(Calendar.DAY_OF_WEEK);// start 1 == Sunday
+            int row = mCalendar.get(Calendar.WEEK_OF_MONTH);// start 1
+
+            int mLeft = getPaddingLeft() + (column - 1) * mItemLength;
+            int mTop = (int) (getPaddingTop() + mMonthTitleHeight + mWeekTitleHeight + (row - 1) * mItemLength);
+
+            child.layout(mLeft, mTop, mLeft + mItemLength, mTop + mItemLength);
+        }
+    }
+
+    @Override
+    public MonthAdapter getAdapter() {
+        return mAdapter;
+    }
+
+    @Override
+    public void setAdapter(MonthAdapter adapter) {
+        mAdapter = adapter;
+        removeAllViewsInLayout();
+        requestLayout();
+    }
+
+    @Override
+    public View getSelectedView() {
         return null;
     }
 
-    @Override public void setAdapter(MonthAdapter adapter) {
-
-    }
-
-    @Override public View getSelectedView() {
-        return null;
-    }
-
-    @Override public void setSelection(int position) {
+    @Override
+    public void setSelection(int position) {
 
     }
 

@@ -40,7 +40,7 @@ public abstract class MonthAdapter implements Adapter {
 
     @Override
     public int getCount() {
-        return lastDay - 1;
+        return lastDay;
     }
 
     @Override

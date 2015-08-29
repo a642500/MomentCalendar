@@ -52,6 +52,11 @@ public class DayView extends View {
         invalidate();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(mTimeStatus == TimeStatus.TODAY || enabled);
+    }
+
     private void init(int day) {
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBackgroundPaint.setColor(ORANGE);

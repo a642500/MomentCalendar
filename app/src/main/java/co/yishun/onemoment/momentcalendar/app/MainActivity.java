@@ -27,9 +27,17 @@ public class MainActivity extends AppCompatActivity {
         calendar.setAdapter(new MomentMonthView.MonthAdapter() {
             @Override
             public void onBindView(Calendar calendar, DayView dayView) {
-                if (calendar.compareTo(now) < 0) {
+                dayView.setEnabled(calendar.get(Calendar.DAY_OF_MONTH) % 2 == 0
+                                || calendar.get(Calendar.DAY_OF_MONTH) % 5 == 0
+                                || calendar.get(Calendar.DAY_OF_MONTH) % 3 == 0
+                );
+                if (calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+                        && calendar.get(Calendar.MONTH) == now.get(Calendar.MONTH)
+                        && calendar.get(Calendar.DAY_OF_MONTH) + 1 == now.get(Calendar.DAY_OF_MONTH)
+                        ) {
                     dayView.setEnabled(true);
-                }
+                    dayView.setSelected(true);
+                } else dayView.setSelected(false);
             }
         });
     }

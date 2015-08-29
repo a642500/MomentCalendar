@@ -10,17 +10,16 @@ import java.util.Calendar;
 /**
  * Created by yyz on 7/19/15.
  */
-public abstract class MonthAdapter implements Adapter {
-    private final Calendar mCalendar;
+public class InternalMonthAdapter implements Adapter {
     private final Calendar passCalendar;
     private final Calendar NOW = Calendar.getInstance();
-    private final int lastDay;
+    private final MomentMonthView.MonthAdapter mAdapter;
+    private int lastDay;
 
-    protected MonthAdapter(Calendar calendar) {
-        mCalendar = calendar;
-        lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-        passCalendar = Calendar.getInstance();
-        passCalendar.set(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), 1);
+    protected InternalMonthAdapter(Calendar calendar, MomentMonthView.MonthAdapter adapter) {
+        passCalendar = calendar;
+        mAdapter = adapter;
+        updateCalendar(calendar);
     }
 
     @Override
@@ -76,23 +75,19 @@ public abstract class MonthAdapter implements Adapter {
             rootView.setEnabled(true);
         } else if (passCalendar.compareTo(NOW) > 0) {
             rootView.setTimeStatus(DayView.TimeStatus.FUTURE);
+            rootView.setSelected(false);
             rootView.setEnabled(false);
         } else {
             rootView.setTimeStatus(DayView.TimeStatus.PAST);
+            rootView.setSelected(false);
             rootView.setEnabled(false);
         }
 
-        onBindView(passCalendar, rootView);
+        if (mAdapter != null) {
+            mAdapter.onBindView(passCalendar, rootView);
+        }
         return rootView;
     }
-
-    /**
-     * set day view
-     *
-     * @param calendar indicate day of the view
-     * @param dayView  view of displayed
-     */
-    public abstract void onBindView(Calendar calendar, DayView dayView);
 
     @Override
     public int getItemViewType(int position) {
@@ -102,5 +97,10 @@ public abstract class MonthAdapter implements Adapter {
     @Override
     public int getViewTypeCount() {
         return 1;
+    }
+
+    public void updateCalendar(Calendar calendar) {
+        lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        passCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 1);
     }
 }

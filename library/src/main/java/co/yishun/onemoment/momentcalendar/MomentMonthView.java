@@ -19,8 +19,8 @@ import java.util.Locale;
 /**
  * TODO: document your custom view class.
  */
-public class MomentMonthView extends AdapterView<MonthAdapter> {
-    private MonthAdapter mAdapter;
+public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
+    private final InternalMonthAdapter mAdapter;
 
     private int mItemLength = 0;
 
@@ -46,21 +46,24 @@ public class MomentMonthView extends AdapterView<MonthAdapter> {
     // for DayView
     private LayoutParams mItemParams;
 
-    public MomentMonthView(Context context, Calendar calendar) {
+    public MomentMonthView(Context context, Calendar calendar, MonthAdapter adapter) {
         super(context);
         mCalendar = calendar;
+        mAdapter = new InternalMonthAdapter(calendar, adapter);
         init();
     }
 
     public MomentMonthView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mCalendar = Calendar.getInstance();
+        mAdapter = new InternalMonthAdapter(mCalendar, null);
         init();
     }
 
     public MomentMonthView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mCalendar = Calendar.getInstance();
+        mAdapter = new InternalMonthAdapter(mCalendar, null);
         init();
     }
 
@@ -68,12 +71,14 @@ public class MomentMonthView extends AdapterView<MonthAdapter> {
     public MomentMonthView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         this.mCalendar = Calendar.getInstance();
+        mAdapter = new InternalMonthAdapter(mCalendar, null);
         init();
     }
 
     public void init() {
         setWillNotDraw(false);
-        mMonthTitle = new SimpleDateFormat("yyyy/MM", Locale.getDefault()).format(mCalendar.getTime());
+
+        invalidateCalendar();
         mMonthTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mMonthTitlePaint.setTextSize(mMonthTitleSize);
         mMonthTitlePaint.setColor(ORANGE);
@@ -85,18 +90,12 @@ public class MomentMonthView extends AdapterView<MonthAdapter> {
         mWeekTitlePaint.setColor(GRAY);
         mWeekTextMeasureRect = new Rect();
 
-        mWeekNum = mCalendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
-
         mItemParams = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    }
 
-        if (isInEditMode()) {
-            setAdapter(new MonthAdapter(mCalendar) {
-                @Override
-                public void onBindView(Calendar calendar, DayView dayView) {
-
-                }
-            });
-        }
+    private void invalidateCalendar() {
+        mMonthTitle = new SimpleDateFormat("yyyy/MM", Locale.getDefault()).format(mCalendar.getTime());
+        mWeekNum = mCalendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
     }
 
     @Override
@@ -117,11 +116,6 @@ public class MomentMonthView extends AdapterView<MonthAdapter> {
         mItemParams.height = mItemLength;
 
         setMeasuredDimension(w, (int) h);
-    }
-
-    @Override
-    public boolean isInEditMode() {
-        return true;
     }
 
     @Override
@@ -176,15 +170,13 @@ public class MomentMonthView extends AdapterView<MonthAdapter> {
     }
 
     @Override
-    public MonthAdapter getAdapter() {
+    public InternalMonthAdapter getAdapter() {
         return mAdapter;
     }
 
     @Override
-    public void setAdapter(MonthAdapter adapter) {
-        mAdapter = adapter;
-        removeAllViewsInLayout();
-        requestLayout();
+    public void setAdapter(InternalMonthAdapter adapter) {
+        throw new UnsupportedOperationException("You cannot call this.");
     }
 
     @Override
@@ -197,176 +189,21 @@ public class MomentMonthView extends AdapterView<MonthAdapter> {
 
     }
 
+    public void setCalendar(Calendar calendar) {
+        mCalendar = calendar;
+        invalidateCalendar();
+        removeAllViewsInLayout();
+        mAdapter.updateCalendar(calendar);
+        this.invalidate();
+    }
 
-//    public MomentMonthView(Context context) {
-//        super(context);
-//        init(null, 0);
-//    }
-//
-//    public MomentMonthView(Context context, AttributeSet attrs) {
-//        super(context, attrs);
-//        init(attrs, 0);
-//    }
-//
-//    public MomentMonthView(Context context, AttributeSet attrs, int defStyle) {
-//        super(context, attrs, defStyle);
-//        init(attrs, defStyle);
-//    }
-//
-//    @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
-//
-//    }
-//
-//    private void init(AttributeSet attrs, int defStyle) {
-//        // Load attributes
-//        final TypedArray a = getContext().obtainStyledAttributes(
-//                attrs, R.styleable.MomentMonthView, defStyle, 0);
-//
-//        mExampleString = a.getString(
-//                R.styleable.MomentMonthView_exampleString);
-//        disableTextColor = a.getColor(
-//                R.styleable.MomentMonthView_exampleColor,
-//                disableTextColor);
-//        // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
-//        // values that should fall on pixel boundaries.
-//        dayTextSize = a.getDimension(
-//                R.styleable.MomentMonthView_exampleDimension,
-//                dayTextSize);
-//
-//        if (a.hasValue(R.styleable.MomentMonthView_dayOfWeekTitle)) {
-//            CharSequence[] s = a.getTextArray(R.styleable.MomentMonthView_dayOfWeekTitle);
-//            if (dayOfWeekTitle.length != DAY_NUM_OF_WEEK)
-//                throw new IllegalArgumentException("You must provide" +
-//                        " seven titles of days of week");
-//            dayOfWeekTitle = new String[DAY_NUM_OF_WEEK];
-//            for (int i = 0; i < DAY_NUM_OF_WEEK; i++) {
-//                dayOfWeekTitle[i] = s[i].toString();
-//            }
-//        } else {
-//            dayOfWeekTitle = getResources().getStringArray(R.array.day_of_week);
-//        }
-//
-//        a.recycle();
-//
-//        // Set up a default TextPaint object
-//        mDayTextPaint = new TextPaint();
-//        mDayTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-//        mDayTextPaint.setTextAlign(Paint.Align.CENTER);
-//
-//
-//        // Update TextPaint and text measurements from attributes
-//        invalidateTextPaintAndMeasurements();
-//    }
-//
-//    private void invalidateTextPaintAndMeasurements() {
-//        mDayTextPaint.setTextSize(dayTextSize);
-//        Paint.FontMetrics fontMetrics = mDayTextPaint.getFontMetrics();
-//        dayTextHeight = fontMetrics.bottom;
-//
-//        mWeekTitleTextPaint.setTextSize(titleTextSize);
-//        for (int i = 0; i < DAY_NUM_OF_WEEK; i++) {
-//            titleWidths[i] = mWeekTitleTextPaint.measureText(dayOfWeekTitle[i]);
-//        }
-//        titleHeight = mWeekTitleTextPaint.getFontMetrics().bottom;
-//    }
-//
-//    private float[] titleWidths = new float[DAY_NUM_OF_WEEK];
-//    private float titleHeight;
-//
-//    private int paddingLeft;
-//    private int paddingTop;
-//    private int paddingRight;
-//    private int paddingBottom;
-//
-//    private int contentWidth;
-//    private int contentHeight;
-//
-//    @Override
-//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//
-//        paddingLeft = getPaddingLeft();
-//        paddingTop = getPaddingTop();
-//        paddingRight = getPaddingRight();
-//        paddingBottom = getPaddingBottom();
-//
-//        contentWidth = getWidth() - paddingLeft - paddingRight;
-//        contentHeight = getHeight() - paddingTop - paddingBottom;
-//
-//        boolean isPortrait = ignoreLandscape || contentWidth > contentHeight;
-//        if (isPortrait) {
-//            dayViewLength = Math.max(contentHeight, contentWidth) / DAY_NUM_OF_WEEK;
-//        }
-//
-//
-//    }
-//
-//
-//    private TextPaint mDayTextPaint;
-//    private TextPaint mWeekTitleTextPaint;
-//    private TextPaint mDayDisableTextPaint;
-//    private Paint mDayBackgroundPaint;
-
-//    @Override
-//    protected void onDraw(Canvas canvas) {
-//        super.onDraw(canvas);
-//
-//
-//        for (int i = 0; i < dayOfWeekTitle.length; i++) {
-//            String title = dayOfWeekTitle[i];
-//            canvas.drawText(title,
-//                    paddingLeft + dayViewLength * i + (dayViewLength - titleWidths[i]) / 2,
-//                    paddingTop,
-//                    mWeekTitleTextPaint);
-//        }
-//
-//
-//        int start = mMonth.getFirstDayOfWeek();
-//        for (int i = 0; i < mMonth.getMaximum(Calendar.DAY_OF_MONTH); i++) {
-//            drawDay(canvas, i + 1, i % 7 + start, (i - start) / 7, false, false);
-//        }
-//
-//
-//        // Draw the text.
-//        canvas.drawText(mExampleString, paddingLeft + (contentWidth - mTextWidth) / 2, paddingTop
-//                + (contentHeight - dayTextHeight) / 2, mDayTextPaint);
-//
-//        // Draw the example drawable on top of the text.
-//        if (mExampleDrawable != null) {
-//            mExampleDrawable.setBounds(paddingLeft, paddingTop,
-//                    paddingLeft + contentWidth, paddingTop + contentHeight);
-//            mExampleDrawable.draw(canvas);
-//        }
-//    }
-
-//    /**
-//     * Notice: day of week start with Sunday whose evaluate 1
-//     *
-//     * @param dayOfWeek
-//     * @param enable
-//     * @param selected
-//     */
-//    private void drawDay(Canvas canvas, int num, int dayOfWeek, int line, boolean enable, boolean
-//            selected) {
-//        String text = String.valueOf(num);
-//        mDayTextPaint.setColor(enable ? enableTextColor : disableTextColor);
-//        float dayTextWidth = mDayTextPaint.measureText(text);
-//
-//        canvas.drawText(text, paddingLeft + dayViewLength * (dayOfWeek - 1) + (dayViewLength -
-//                        dayTextWidth) / 2, paddingTop + titleHeight + line * dayViewLength,
-//                mDayTextPaint);
-//
-//        if (selected) {
-//
-//        }
-//    }
-//
-//    private void drawToday(Canvas canvas, int dayOfWeek, int line) {
-//        //TODO            mDayBackgroundPaint.setStyle(Paint.Style.FILL);
-//        mDayBackgroundPaint.setColor(mSelectedBackgroundColor);
-//        canvas.drawCircle(paddingLeft + dayViewLength * (dayOfWeek - 1) + dayViewLength / 2,
-//                paddingTop + titleHeight + line * dayViewLength + dayViewLength / 2,
-//                dayViewLength / 2,
-//                mDayBackgroundPaint);
-//    }
+    public interface MonthAdapter {
+        /**
+         * set day view
+         *
+         * @param calendar indicate day of the view
+         * @param dayView  view of displayed
+         */
+        void onBindView(Calendar calendar, DayView dayView);
+    }
 }

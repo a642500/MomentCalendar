@@ -1,9 +1,16 @@
 package co.yishun.onemoment.momentcalendar.app;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.Calendar;
+
+import co.yishun.onemoment.momentcalendar.AnimationViewPager;
+import co.yishun.onemoment.momentcalendar.DayView;
+import co.yishun.onemoment.momentcalendar.MomentCalendar;
+import co.yishun.onemoment.momentcalendar.MomentMonthView;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -12,6 +19,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        final Calendar now = Calendar.getInstance();
+        MomentCalendar calendar = (MomentCalendar) findViewById(R.id.momentCalendar);
+        calendar.setTransitionEffect(AnimationViewPager.TransitionEffect.CubeIn);
+        calendar.setAdapter(new MomentMonthView.MonthAdapter() {
+            @Override
+            public void onBindView(Calendar calendar, DayView dayView) {
+                if (calendar.compareTo(now) < 0) {
+                    dayView.setEnabled(true);
+                }
+            }
+        });
     }
 
     @Override

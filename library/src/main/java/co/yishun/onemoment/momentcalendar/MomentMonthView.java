@@ -16,9 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-/**
- * TODO: document your custom view class.
- */
 public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
     private final InternalMonthAdapter mAdapter;
 

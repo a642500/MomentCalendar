@@ -78,8 +78,8 @@ public class OutlineContainer extends FrameLayout implements Animatable {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         int offset = dpToPx(getResources(), 5);
-        if (mOutlinePaint.getColor() != JazzyViewPager.sOutlineColor) {
-            mOutlinePaint.setColor(JazzyViewPager.sOutlineColor);
+        if (mOutlinePaint.getColor() != AnimationViewPager.sOutlineColor) {
+            mOutlinePaint.setColor(AnimationViewPager.sOutlineColor);
         }
         mOutlinePaint.setAlpha((int) (mAlpha * 255));
         Rect rect = new Rect(offset, offset, getMeasuredWidth() - offset, getMeasuredHeight() - offset);

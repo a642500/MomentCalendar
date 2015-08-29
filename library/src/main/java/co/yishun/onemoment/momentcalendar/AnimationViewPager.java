@@ -18,7 +18,7 @@ import com.nineoldandroids.view.ViewHelper;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class JazzyViewPager extends ViewPager {
+public class AnimationViewPager extends ViewPager {
 
     public static final String TAG = "JazzyViewPager";
 
@@ -55,22 +55,22 @@ public class JazzyViewPager extends ViewPager {
         API_11 = Build.VERSION.SDK_INT >= 11;
     }
 
-    public JazzyViewPager(Context context) {
+    public AnimationViewPager(Context context) {
         this(context, null);
     }
 
     @SuppressWarnings("incomplete-switch")
-    public JazzyViewPager(Context context, AttributeSet attrs) {
+    public AnimationViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         setClipChildren(false);
         // now style everything!
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.JazzyViewPager);
-        int effect = ta.getInt(R.styleable.JazzyViewPager_style, 0);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AnimationViewPager);
+        int effect = ta.getInt(R.styleable.AnimationViewPager_style, 0);
         String[] transitions = getResources().getStringArray(R.array.jazzy_effects);
         setTransitionEffect(TransitionEffect.valueOf(transitions[effect]));
-        setFadeEnabled(ta.getBoolean(R.styleable.JazzyViewPager_fadeEnabled, false));
-        setOutlineEnabled(ta.getBoolean(R.styleable.JazzyViewPager_outlineEnabled, false));
-        setOutlineColor(ta.getColor(R.styleable.JazzyViewPager_outlineColor, Color.WHITE));
+        setFadeEnabled(ta.getBoolean(R.styleable.AnimationViewPager_fadeEnabled, false));
+        setOutlineEnabled(ta.getBoolean(R.styleable.AnimationViewPager_outlineEnabled, false));
+        setOutlineColor(ta.getColor(R.styleable.AnimationViewPager_outlineColor, Color.WHITE));
         switch (mEffect) {
             case Stack:
             case ZoomOut:

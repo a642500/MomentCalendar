@@ -20,14 +20,14 @@ public class CalendarAdapter extends PagerAdapter implements ViewPager.OnPageCha
     private MomentCalendar momentCalendar;
     private Context context;
 
-    public CalendarAdapter(Context context, MomentCalendar momentCalendar) {
+    public CalendarAdapter(Context context, MomentCalendar momentCalendar, MomentMonthView.MonthAdapter adapter) {
         this.context = context;
         this.momentCalendar = momentCalendar;
 
         for (int i = 0; i < 3; i++) {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MONTH, i - 1);
-            MomentMonthView view = new MomentMonthView(context, calendar, null);//TODO add adapter
+            MomentMonthView view = new MomentMonthView(context, calendar, adapter);
             monthViews[i] = view;
         }
         momentCalendar.setAdapter(this);

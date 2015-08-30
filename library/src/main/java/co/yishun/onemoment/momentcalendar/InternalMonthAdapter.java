@@ -71,15 +71,12 @@ public class InternalMonthAdapter implements Adapter {
                 && passCalendar.get(Calendar.DAY_OF_MONTH) == NOW.get(Calendar.DAY_OF_MONTH)
                 ) {
             rootView.setTimeStatus(DayView.TimeStatus.TODAY);
-            rootView.setSelected(true);
             rootView.setEnabled(true);
         } else if (passCalendar.compareTo(NOW) > 0) {
             rootView.setTimeStatus(DayView.TimeStatus.FUTURE);
-            rootView.setSelected(false);
             rootView.setEnabled(false);
         } else {
             rootView.setTimeStatus(DayView.TimeStatus.PAST);
-            rootView.setSelected(false);
             rootView.setEnabled(false);
         }
 

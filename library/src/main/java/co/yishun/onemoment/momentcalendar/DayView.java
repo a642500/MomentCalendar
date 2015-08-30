@@ -1,5 +1,6 @@
 package co.yishun.onemoment.momentcalendar;
 
+import android.animation.AnimatorInflater;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,8 +14,9 @@ import android.view.View;
 /**
  * Created by yyz on 7/19/15.
  */
-public class DayView extends View {
+public class DayView extends View implements View.OnClickListener {
 
+    private static DayView mSelectedDayView = null;
     private Paint mBackgroundPaint;
     private TextPaint mTextPaint;
     private String day;
@@ -47,6 +49,24 @@ public class DayView extends View {
         init(12);
     }
 
+    public static DayView getSelectedDayView() {
+        return mSelectedDayView;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        //TODO add animation
+        if (selected) {
+            // avoid circular
+            if (!isEnabled() || mTimeStatus == TimeStatus.FUTURE) return;
+            if (mSelectedDayView != null) {
+                mSelectedDayView.setSelected(false);
+            }
+            mSelectedDayView = this;
+        }
+        super.setSelected(selected);
+    }
+
     public void setTimeStatus(TimeStatus time) {
         this.mTimeStatus = time;
         invalidate();
@@ -66,6 +86,11 @@ public class DayView extends View {
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextSize(mTextSize);
         mTextRect = new Rect();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.setStateListAnimator(AnimatorInflater.loadStateListAnimator(getContext(), R.anim.btn_elevation));
+        }
+        super.setOnClickListener(this);
     }
 
     @Override
@@ -102,6 +127,16 @@ public class DayView extends View {
         final float y = oy + mTextRect.height() / 2;
 
         canvas.drawText(day, x, y, mTextPaint);
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        throw new UnsupportedOperationException("You cannot call this");
+    }
+
+    @Override
+    public void onClick(View v) {
+        setSelected(true);
     }
 
     public enum TimeStatus {

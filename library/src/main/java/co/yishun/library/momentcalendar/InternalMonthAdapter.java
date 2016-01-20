@@ -72,6 +72,8 @@ public class InternalMonthAdapter implements Adapter {
         if (mAdapter != null) {
             mAdapter.onBindView(passCalendar, rootView);
         }
+        if (rootView.getTimeStatus() == DayView.TimeStatus.TODAY)
+            DayView.onTodayAvailable(rootView);
         return rootView;
     }
 

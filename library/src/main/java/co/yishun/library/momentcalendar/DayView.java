@@ -1,22 +1,36 @@
 package co.yishun.library.momentcalendar;
 
 import android.animation.AnimatorInflater;
-import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextPaint;
-import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by yyz on 7/19/15.
  */
-public class DayView extends View implements View.OnClickListener {
+public class DayView extends ImageView implements View.OnClickListener {
 
+    private static final String TAG = "DayView";
     private static DayView mSelectedDayView = null;
+    private static OnMomentSelectedListener mMomentSelectedListener;
+    private static boolean mMultiSelection = false;
+    private static WeakReference<OnTodayAvailableListener> mTodayAvailableListener = new WeakReference<>(null);
     private Paint mBackgroundPaint;
     private TextPaint mTextPaint;
     private String day;
@@ -26,31 +40,33 @@ public class DayView extends View implements View.OnClickListener {
     private int WHITE = getResources().getColor(R.color.colorWhite);
     private int GRAY = getResources().getColor(R.color.colorGray);
     private int ORANGE = getResources().getColor(R.color.colorOrange);
+    private int ORANGE_TRANSPARENT = getResources().getColor(R.color.colorOrangeTransparent);
     private float mTextSize = getResources().getDimension(R.dimen.MMV_dayNumTextSize);
+    private BitmapShader mBitmapShader;
+    private Paint mBitmapPaint;
 
     public DayView(Context context, int day) {
         super(context);
         init(day);
     }
 
-    public DayView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(12);
+    public static void setMultiSelection(boolean multiSelection) {
+        mMultiSelection = multiSelection;
     }
 
-    public DayView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(12);
+    public static void setOnMomentSelectedListener(@Nullable OnMomentSelectedListener listener) {
+        mMomentSelectedListener = listener;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public DayView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(12);
+    public static void setTodayAvailableListener(OnTodayAvailableListener todayAvailableListener) {
+        mTodayAvailableListener = new WeakReference<>(todayAvailableListener);
     }
 
-    public static DayView getSelectedDayView() {
-        return mSelectedDayView;
+    protected static void onTodayAvailable(DayView dayView) {
+        OnTodayAvailableListener listener = mTodayAvailableListener.get();
+        if (listener != null) {
+            listener.onTodayAvailable(dayView);
+        }
     }
 
     @Override public void setSelected(boolean selected) {
@@ -59,7 +75,7 @@ public class DayView extends View implements View.OnClickListener {
             // avoid circular
             if (!isEnabled() || mTimeStatus == TimeStatus.FUTURE)
                 return;
-            if (mSelectedDayView != null) {
+            if (mSelectedDayView != null && !mMultiSelection) {
                 mSelectedDayView.setSelected(false);
             }
             mSelectedDayView = this;
@@ -67,24 +83,26 @@ public class DayView extends View implements View.OnClickListener {
         super.setSelected(selected);
     }
 
-    public void setTimeStatus(TimeStatus time) {
-        this.mTimeStatus = time;
-        invalidate();
-    }
-
     @Override public void setEnabled(boolean enabled) {
-        super.setEnabled(mTimeStatus == TimeStatus.TODAY || enabled);
+        if (!mMultiSelection)
+            super.setEnabled(mTimeStatus == TimeStatus.TODAY || enabled);
+        else
+            super.setEnabled(enabled);
     }
 
     private void init(int day) {
+        setWillNotDraw(false);
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBackgroundPaint.setColor(ORANGE);
+        mBackgroundPaint.setColor(ORANGE_TRANSPARENT);
 
         this.day = String.valueOf(day);
 
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextSize(mTextSize);
         mTextRect = new Rect();
+
+        mBitmapPaint = new Paint();
+        mBitmapPaint.setAntiAlias(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.setStateListAnimator(AnimatorInflater.loadStateListAnimator(getContext(), R.anim.btn_elevation));
@@ -94,17 +112,19 @@ public class DayView extends View implements View.OnClickListener {
 
     @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        //        int h = getMeasuredHeight();
-        //        int w = getMeasuredWidth();
-
         mTextPaint.getTextBounds(day, 0, day.length(), mTextRect);
     }
 
     @Override protected void onDraw(Canvas canvas) {
+        //        super.onDraw(canvas);
         final float ox = canvas.getWidth() / 2;
         final float oy = canvas.getHeight() / 2;
-        final float r = Math.min(ox, oy);
+        final float r = Math.min(ox, oy) * 0.85f;
+
+        if (getDrawable() != null) {
+            updatePaint(getBitmapFromDrawable(getDrawable()));
+            canvas.drawCircle(ox, oy, r, mBitmapPaint);
+        }
 
         if (!isEnabled() || mTimeStatus == TimeStatus.FUTURE) {
             // today should be enable
@@ -126,15 +146,80 @@ public class DayView extends View implements View.OnClickListener {
         canvas.drawText(day, x, y, mTextPaint);
     }
 
+    //TODO  test performance
+    //TODO change selected effect
+    @Override public void setImageBitmap(@NonNull Bitmap bitmap) {
+        super.setImageBitmap(bitmap);
+    }
+
+    private void updatePaint(Bitmap mBitmap) {
+        if (mBitmap == null) {
+            mBitmapPaint.setColor(Color.TRANSPARENT);
+            return;
+        }
+        mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        mBitmapPaint.setShader(mBitmapShader);
+    }
+
+    private Bitmap getBitmapFromDrawable(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        try {
+            Bitmap bitmap;
+
+            if (drawable instanceof ColorDrawable) {
+                bitmap = Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
+            } else {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            }
+
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return bitmap;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
+    }
+
     @Override public void setOnClickListener(OnClickListener l) {
         throw new UnsupportedOperationException("You cannot call this");
     }
 
+    public TimeStatus getTimeStatus() {
+        return mTimeStatus;
+    }
+
+    public void setTimeStatus(TimeStatus time) {
+        this.mTimeStatus = time;
+        invalidate();
+    }
+
     @Override public void onClick(View v) {
-        setSelected(true);
+        if (mMomentSelectedListener != null) {
+            mMomentSelectedListener.onSelected(this);
+        }
+        if (mMultiSelection)
+            setSelected(!isSelected());
+        else
+            setSelected(true);
     }
 
     public enum TimeStatus {
         TODAY, PAST, FUTURE
+    }
+
+    public interface OnMomentSelectedListener {
+        void onSelected(DayView dayView);
+    }
+
+    public interface OnTodayAvailableListener {
+        void onTodayAvailable(DayView dayView);
     }
 }

@@ -74,7 +74,7 @@ public class AnimationViewPager extends ViewPager {
 
     public void setTransitionEffect(TransitionEffect effect) {
         mEffect = effect;
-        //		reset();
+//		reset();
     }
 
     public void setPagingEnabled(boolean enabled) {
@@ -109,11 +109,11 @@ public class AnimationViewPager extends ViewPager {
     }
 
     private View wrapChild(View child) {
-        if (!mOutlineEnabled || child instanceof OutlineContainer)
-            return child;
+        if (!mOutlineEnabled || child instanceof OutlineContainer) return child;
         OutlineContainer out = new OutlineContainer(getContext());
         out.setLayoutParams(generateDefaultLayoutParams());
-        child.setLayoutParams(new OutlineContainer.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        child.setLayoutParams(new OutlineContainer.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         out.addView(child);
         return out;
     }
@@ -138,42 +138,43 @@ public class AnimationViewPager extends ViewPager {
         super.addView(wrapChild(child), index, params);
     }
 
-    //	public void reset() {
-    //	resetPrivate();
-    //	int curr = getCurrentItem();
-    //	onPageScrolled(curr, 0.0f, 0);
-    //}
-    //
-    //private void resetPrivate() {
-    //	for (int i = 0; i < getChildCount(); i++) {
-    //		View v = getChildAt(i);
-    //		//			ViewHelper.setRotation(v, -ViewHelper.getRotation(v));
-    //		//			ViewHelper.setRotationX(v, -ViewHelper.getRotationX(v));
-    //		//			ViewHelper.setRotationY(v, -ViewHelper.getRotationY(v));
-    //		//
-    //		//			ViewHelper.setTranslationX(v, -ViewHelper.getTranslationX(v));
-    //		//			ViewHelper.setTranslationY(v, -ViewHelper.getTranslationY(v));
-    //
-    //		ViewHelper.setRotation(v, 0);
-    //		ViewHelper.setRotationX(v, 0);
-    //		ViewHelper.setRotationY(v, 0);
-    //
-    //		ViewHelper.setTranslationX(v, 0);
-    //		ViewHelper.setTranslationY(v, 0);
-    //
-    //		ViewHelper.setAlpha(v, 1.0f);
-    //
-    //		ViewHelper.setScaleX(v, 1.0f);
-    //		ViewHelper.setScaleY(v, 1.0f);
-    //
-    //		ViewHelper.setPivotX(v, 0);
-    //		ViewHelper.setPivotY(v, 0);
-    //
-    //		logState(v, "Child " + i);
-    //	}
-    //}
+//	public void reset() {
+//	resetPrivate();
+//	int curr = getCurrentItem();
+//	onPageScrolled(curr, 0.0f, 0);
+//}
+//
+//private void resetPrivate() {
+//	for (int i = 0; i < getChildCount(); i++) {
+//		View v = getChildAt(i);
+//		//			ViewHelper.setRotation(v, -ViewHelper.getRotation(v));
+//		//			ViewHelper.setRotationX(v, -ViewHelper.getRotationX(v));
+//		//			ViewHelper.setRotationY(v, -ViewHelper.getRotationY(v));
+//		//
+//		//			ViewHelper.setTranslationX(v, -ViewHelper.getTranslationX(v));
+//		//			ViewHelper.setTranslationY(v, -ViewHelper.getTranslationY(v));
+//
+//		ViewHelper.setRotation(v, 0);
+//		ViewHelper.setRotationX(v, 0);
+//		ViewHelper.setRotationY(v, 0);
+//
+//		ViewHelper.setTranslationX(v, 0);
+//		ViewHelper.setTranslationY(v, 0);
+//
+//		ViewHelper.setAlpha(v, 1.0f);
+//
+//		ViewHelper.setScaleX(v, 1.0f);
+//		ViewHelper.setScaleY(v, 1.0f);
+//
+//		ViewHelper.setPivotX(v, 0);
+//		ViewHelper.setPivotY(v, 0);
+//
+//		logState(v, "Child " + i);
+//	}
+//}
 
-    @Override public boolean onInterceptTouchEvent(MotionEvent arg0) {
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent arg0) {
         return mEnabled ? super.onInterceptTouchEvent(arg0) : false;
     }
 
@@ -202,7 +203,8 @@ public class AnimationViewPager extends ViewPager {
             if (left != null) {
                 manageLayer(left, true);
                 mRot = 30.0f * positionOffset;
-                mTrans = getOffsetXForRotation(mRot, left.getMeasuredWidth(), left.getMeasuredHeight());
+                mTrans = getOffsetXForRotation(mRot, left.getMeasuredWidth(),
+                        left.getMeasuredHeight());
                 ViewHelper.setPivotX(left, left.getMeasuredWidth() / 2);
                 ViewHelper.setPivotY(left, left.getMeasuredHeight() / 2);
                 ViewHelper.setTranslationX(left, mTrans);
@@ -212,7 +214,8 @@ public class AnimationViewPager extends ViewPager {
             if (right != null) {
                 manageLayer(right, true);
                 mRot = -30.0f * (1 - positionOffset);
-                mTrans = getOffsetXForRotation(mRot, right.getMeasuredWidth(), right.getMeasuredHeight());
+                mTrans = getOffsetXForRotation(mRot, right.getMeasuredWidth(),
+                        right.getMeasuredHeight());
                 ViewHelper.setPivotX(right, right.getMeasuredWidth() * 0.5f);
                 ViewHelper.setPivotY(right, right.getMeasuredHeight() * 0.5f);
                 ViewHelper.setTranslationX(right, mTrans);
@@ -262,7 +265,8 @@ public class AnimationViewPager extends ViewPager {
         if (mState != State.IDLE) {
             if (left != null) {
                 manageLayer(left, true);
-                mScale = in ? ZOOM_MAX + (1 - ZOOM_MAX) * (1 - positionOffset) : 1 + ZOOM_MAX - ZOOM_MAX * (1 - positionOffset);
+                mScale = in ? ZOOM_MAX + (1 - ZOOM_MAX) * (1 - positionOffset) :
+                        1 + ZOOM_MAX - ZOOM_MAX * (1 - positionOffset);
                 ViewHelper.setPivotX(left, left.getMeasuredWidth() * 0.5f);
                 ViewHelper.setPivotY(left, left.getMeasuredHeight() * 0.5f);
                 ViewHelper.setScaleX(left, mScale);
@@ -270,7 +274,8 @@ public class AnimationViewPager extends ViewPager {
             }
             if (right != null) {
                 manageLayer(right, true);
-                mScale = in ? ZOOM_MAX + (1 - ZOOM_MAX) * positionOffset : 1 + ZOOM_MAX - ZOOM_MAX * positionOffset;
+                mScale = in ? ZOOM_MAX + (1 - ZOOM_MAX) * positionOffset :
+                        1 + ZOOM_MAX - ZOOM_MAX * positionOffset;
                 ViewHelper.setPivotX(right, right.getMeasuredWidth() * 0.5f);
                 ViewHelper.setPivotY(right, right.getMeasuredHeight() * 0.5f);
                 ViewHelper.setScaleX(right, mScale);
@@ -390,16 +395,15 @@ public class AnimationViewPager extends ViewPager {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void manageLayer(View v, boolean enableHardware) {
-        if (!API_11)
-            return;
+        if (!API_11) return;
         int layerType = enableHardware ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
         if (layerType != v.getLayerType())
             v.setLayerType(layerType, null);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) private void disableHardwareLayer() {
-        if (!API_11)
-            return;
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void disableHardwareLayer() {
+        if (!API_11) return;
         View v;
         for (int i = 0; i < getChildCount(); i++) {
             v = getChildAt(i);
@@ -466,8 +470,8 @@ public class AnimationViewPager extends ViewPager {
 
         float effectOffset = isSmall(positionOffset) ? 0 : positionOffset;
 
-        //		mLeft = getChildAt(position);
-        //		mRight = getChildAt(position+1);
+//		mLeft = getChildAt(position);
+//		mRight = getChildAt(position+1);
         mLeft = findViewFromObject(position);
         mRight = findViewFromObject(position + 1);
 
@@ -493,6 +497,7 @@ public class AnimationViewPager extends ViewPager {
                 break;
             case FlipHorizontal:
                 animateFlipHorizontal(mLeft, mRight, effectOffset, positionOffsetPixels);
+                break;
             case Stack:
                 animateStack(mLeft, mRight, effectOffset, positionOffsetPixels);
                 break;

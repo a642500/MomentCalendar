@@ -105,7 +105,7 @@ public class DayView extends ImageView implements View.OnClickListener {
         mBitmapPaint.setAntiAlias(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.setStateListAnimator(AnimatorInflater.loadStateListAnimator(getContext(), R.anim.btn_elevation));
+            this.setStateListAnimator(AnimatorInflater.loadStateListAnimator(getContext(), R.drawable.btn_elevation));
         }
         super.setOnClickListener(this);
     }

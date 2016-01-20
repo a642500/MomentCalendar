@@ -1,4 +1,4 @@
-package co.yishun.onemoment.momentcalendar;
+package co.yishun.library.momentcalendar;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -95,10 +95,9 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
         mWeekNum = mCalendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int rw = MeasureSpec.getSize(widthMeasureSpec);
-//        int rh = MeasureSpec.getSize(heightMeasureSpec);
+        //        int rh = MeasureSpec.getSize(heightMeasureSpec);
         int w = rw - getPaddingLeft() - getPaddingRight();
 
         mItemLength = w / 7;
@@ -115,8 +114,7 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
         setMeasuredDimension(w, (int) h);
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 
         if (mAdapter == null) {
             return;
@@ -136,8 +134,7 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
 
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
+    @Override protected void onDraw(Canvas canvas) {
         float ox = canvas.getWidth() / 2 - mMonthTextMeasureRect.width() / 2;
         float oy = mMonthTextMeasureRect.height() + mMonthTitlePadding;
         canvas.drawText(mMonthTitle, ox, oy, mMonthTitlePaint);
@@ -166,23 +163,19 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
         }
     }
 
-    @Override
-    public InternalMonthAdapter getAdapter() {
+    @Override public InternalMonthAdapter getAdapter() {
         return mAdapter;
     }
 
-    @Override
-    public void setAdapter(InternalMonthAdapter adapter) {
+    @Override public void setAdapter(InternalMonthAdapter adapter) {
         throw new UnsupportedOperationException("You cannot call this.");
     }
 
-    @Override
-    public View getSelectedView() {
+    @Override public View getSelectedView() {
         return null;
     }
 
-    @Override
-    public void setSelection(int position) {
+    @Override public void setSelection(int position) {
 
     }
 

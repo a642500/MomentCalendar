@@ -1,4 +1,4 @@
-package co.yishun.onemoment.momentcalendar;
+package co.yishun.library.momentcalendar;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -27,8 +27,7 @@ public class OutlineContainer extends FrameLayout implements Animatable {
     private long mStartTime;
     private float mAlpha = 1.0f;
     private final Runnable mUpdater = new Runnable() {
-        @Override
-        public void run() {
+        @Override public void run() {
             long now = AnimationUtils.currentAnimationTimeMillis();
             long duration = now - mStartTime;
             if (duration >= ANIMATION_DURATION) {
@@ -74,8 +73,7 @@ public class OutlineContainer extends FrameLayout implements Animatable {
         setPadding(padding, padding, padding, padding);
     }
 
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
+    @Override protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         int offset = dpToPx(getResources(), 5);
         if (mOutlinePaint.getColor() != AnimationViewPager.sOutlineColor) {
@@ -90,13 +88,11 @@ public class OutlineContainer extends FrameLayout implements Animatable {
         mAlpha = alpha;
     }
 
-    @Override
-    public boolean isRunning() {
+    @Override public boolean isRunning() {
         return mIsRunning;
     }
 
-    @Override
-    public void start() {
+    @Override public void start() {
         if (mIsRunning)
             return;
         mIsRunning = true;
@@ -104,8 +100,7 @@ public class OutlineContainer extends FrameLayout implements Animatable {
         post(mUpdater);
     }
 
-    @Override
-    public void stop() {
+    @Override public void stop() {
         if (!mIsRunning)
             return;
         mIsRunning = false;

@@ -1,4 +1,4 @@
-package co.yishun.onemoment.momentcalendar;
+package co.yishun.library.momentcalendar;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

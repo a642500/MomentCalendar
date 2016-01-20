@@ -1,4 +1,4 @@
-package co.yishun.onemoment.momentcalendar;
+package co.yishun.library.momentcalendar;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -45,34 +45,29 @@ public class CalendarAdapter extends PagerAdapter implements ViewPager.OnPageCha
         return calendar;
     }
 
-    @Override
-    public int getCount() {
+    @Override public int getCount() {
         return Integer.MAX_VALUE;
     }
 
-    @Override
-    public Object instantiateItem(ViewGroup parent, final int position) {
+    @Override public Object instantiateItem(ViewGroup parent, final int position) {
         MomentMonthView currView = monthViews[(((position - centerPagePosition + centerPageHolderIndex) % 3) + 3) % 3];
         parent.removeView(currView);
         parent.addView(currView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         currView.setCalendar(getCalendarAt(position));
-//        momentCalendar.setObjectForPosition(, position);
+        //        momentCalendar.setObjectForPosition(, position);
         return currView;
     }
 
-    @Override
-    public boolean isViewFromObject(View view, Object obj) {
+    @Override public boolean isViewFromObject(View view, Object obj) {
         return view == obj;
     }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { /* ignored*/ }
 
-    @Override
-    public void onPageSelected(int position) { /* ignored*/ }
+    @Override public void onPageSelected(int position) { /* ignored*/ }
 
-    @Override
-    public void onPageScrollStateChanged(int state) {
+    @Override public void onPageScrollStateChanged(int state) {
         if (state == ViewPager.SCROLL_STATE_IDLE) {
             int old = centerPagePosition;
             centerPagePosition = momentCalendar.getCurrentItem();
@@ -84,8 +79,7 @@ public class CalendarAdapter extends PagerAdapter implements ViewPager.OnPageCha
         }
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object obj) {
+    @Override public void destroyItem(ViewGroup container, int position, Object obj) {
         // ignored
     }
 }

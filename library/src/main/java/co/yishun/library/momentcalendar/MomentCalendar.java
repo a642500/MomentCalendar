@@ -1,4 +1,4 @@
-package co.yishun.onemoment.momentcalendar;
+package co.yishun.library.momentcalendar;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -30,8 +30,7 @@ public class MomentCalendar extends AnimationViewPager {
         mAdapter = new CalendarAdapter(getContext(), this, adapter);
     }
 
-    @Override
-    public void setAdapter(PagerAdapter adapter) {
+    @Override public void setAdapter(PagerAdapter adapter) {
         if (adapter instanceof CalendarAdapter) {
             super.setAdapter(adapter);
             this.setTransitionEffect(TransitionEffect.CubeIn);

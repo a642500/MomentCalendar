@@ -3,20 +3,20 @@
     <item
         android:state_enabled="true"
         android:state_pressed="true"
-        >
+    >
         <set>
             <objectAnimator
                 android:duration="100"
                 android:propertyName="translationZ"
                 android:valueTo="4dp"
                 android:valueType="floatType"
-                />
+            />
             <objectAnimator
                 android:duration="0"
                 android:propertyName="elevation"
                 android:valueTo="2dp"
                 android:valueType="floatType"
-                />
+            />
         </set>
     </item>
     <!-- base state -->
@@ -28,13 +28,13 @@
                 android:startDelay="100"
                 android:valueTo="0"
                 android:valueType="floatType"
-                />
+            />
             <objectAnimator
                 android:duration="0"
                 android:propertyName="elevation"
                 android:valueTo="2dp"
                 android:valueType="floatType"
-                />
+            />
         </set>
     </item>
     <item>
@@ -44,13 +44,13 @@
                 android:propertyName="translationZ"
                 android:valueTo="0"
                 android:valueType="floatType"
-                />
+            />
             <objectAnimator
                 android:duration="0"
                 android:propertyName="elevation"
                 android:valueTo="0"
                 android:valueType="floatType"
-                />
+            />
         </set>
     </item>
 </selector>

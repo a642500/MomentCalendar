@@ -1,4 +1,4 @@
-package co.yishun.onemoment.momentcalendar;
+package co.yishun.library.momentcalendar;
 
 import android.animation.AnimatorInflater;
 import android.annotation.TargetApi;
@@ -53,12 +53,12 @@ public class DayView extends View implements View.OnClickListener {
         return mSelectedDayView;
     }
 
-    @Override
-    public void setSelected(boolean selected) {
+    @Override public void setSelected(boolean selected) {
         //TODO add animation
         if (selected) {
             // avoid circular
-            if (!isEnabled() || mTimeStatus == TimeStatus.FUTURE) return;
+            if (!isEnabled() || mTimeStatus == TimeStatus.FUTURE)
+                return;
             if (mSelectedDayView != null) {
                 mSelectedDayView.setSelected(false);
             }
@@ -72,8 +72,7 @@ public class DayView extends View implements View.OnClickListener {
         invalidate();
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
+    @Override public void setEnabled(boolean enabled) {
         super.setEnabled(mTimeStatus == TimeStatus.TODAY || enabled);
     }
 
@@ -93,18 +92,16 @@ public class DayView extends View implements View.OnClickListener {
         super.setOnClickListener(this);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-//        int h = getMeasuredHeight();
-//        int w = getMeasuredWidth();
+        //        int h = getMeasuredHeight();
+        //        int w = getMeasuredWidth();
 
         mTextPaint.getTextBounds(day, 0, day.length(), mTextRect);
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
+    @Override protected void onDraw(Canvas canvas) {
         final float ox = canvas.getWidth() / 2;
         final float oy = canvas.getHeight() / 2;
         final float r = Math.min(ox, oy);
@@ -129,13 +126,11 @@ public class DayView extends View implements View.OnClickListener {
         canvas.drawText(day, x, y, mTextPaint);
     }
 
-    @Override
-    public void setOnClickListener(OnClickListener l) {
+    @Override public void setOnClickListener(OnClickListener l) {
         throw new UnsupportedOperationException("You cannot call this");
     }
 
-    @Override
-    public void onClick(View v) {
+    @Override public void onClick(View v) {
         setSelected(true);
     }
 

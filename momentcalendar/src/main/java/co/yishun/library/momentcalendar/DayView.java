@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
 
 /**
  * Created by yyz on 7/19/15.
@@ -46,6 +47,7 @@ public class DayView extends ImageView implements View.OnClickListener {
     private float mTextSize = getResources().getDimension(R.dimen.MMV_dayNumTextSize);
     private BitmapShader mBitmapShader;
     private Paint mBitmapPaint;
+    @ColorInt private int mOverrideTextColor = 0;
 
     public DayView(Context context, int day) {
         super(context);
@@ -92,6 +94,10 @@ public class DayView extends ImageView implements View.OnClickListener {
             super.setEnabled(enabled);
     }
 
+    void onBind(Calendar calendar) {
+
+    }
+
     private void init(int day) {
         setWillNotDraw(false);
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -112,13 +118,17 @@ public class DayView extends ImageView implements View.OnClickListener {
         super.setOnClickListener(this);
     }
 
-    public void setTextColorResource(@ColorRes int colorRes) {
-        setTextColor(getResources().getColor(colorRes));
+    public void overrideTextColorResource(@ColorRes int colorRes) {
+        overrideTextColor(getResources().getColor(colorRes));
     }
 
-    public void setTextColor(@ColorInt int color) {
-        mTextPaint.setColor(color);
+    public void overrideTextColor(@ColorInt int color) {
+        mOverrideTextColor = color;
         invalidate();
+    }
+
+    public void removeOverrieTextColor() {
+        overrideTextColor(0);
     }
 
     @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -153,6 +163,10 @@ public class DayView extends ImageView implements View.OnClickListener {
 
         final float x = ox - mTextRect.width() / 2;
         final float y = oy + mTextRect.height() / 2;
+
+        if (mOverrideTextColor != 0) {
+            mTextPaint.setColor(mOverrideTextColor);
+        }
 
         canvas.drawText(day, x, y, mTextPaint);
     }

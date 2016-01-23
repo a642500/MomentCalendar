@@ -1,0 +1,24 @@
+project.ext {
+
+
+    PROJ_GROUP = 'co.yishun.library'
+    PROJ_VERSION = '0.1.1'
+    PROJ_VERSION_CODE = 2
+    PROJ_NAME = 'co.yishun.library:momentcalendar'
+    PROJ_ARTIFACTID = 'momentcalendar'
+    PROJ_DESCRIPTION = 'An Android Calender widget'
+
+    GITHUB_REPO_NAME = 'MomentCalendar'
+    GITHUB_URL = 'https://github.com/a642500'
+    PROJ_WEBSITEURL = "$GITHUB_URL/$GITHUB_REPO_NAME"
+    PROJ_ISSUETRACKERURL = "$PROJ_WEBSITEURL/issues"
+    PROJ_VCSURL = 'https://github.com/a642500/MomentCalendar.git'
+
+
+    DEVELOPER_ID = 'a642500'
+    DEVELOPER_NAME = 'Carlos'
+    DEVELOPER_EMAIL = 'toxz@foxmail.com'
+    BINTRAY_USER = 'a642500'
+
+    BINTRAY_API_KEY = 'b2b7a8fdf26e4f7b530ba3fdc9be7522e8e16778'
+}

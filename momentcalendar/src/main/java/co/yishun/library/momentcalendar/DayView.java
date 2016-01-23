@@ -38,6 +38,7 @@ public class DayView extends ImageView implements View.OnClickListener {
     private TextPaint mTextPaint;
     private String day;
     private Rect mTextRect;
+    private float mTextWidth;
     private TimeStatus mTimeStatus = TimeStatus.FUTURE;
     private int BLACK = getResources().getColor(R.color.colorBlack);
     private int WHITE = getResources().getColor(R.color.colorWhite);
@@ -134,6 +135,7 @@ public class DayView extends ImageView implements View.OnClickListener {
     @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mTextPaint.getTextBounds(day, 0, day.length(), mTextRect);
+        mTextWidth = mTextPaint.measureText(day, 0, day.length());
     }
 
     @Override protected void onDraw(Canvas canvas) {
@@ -161,8 +163,8 @@ public class DayView extends ImageView implements View.OnClickListener {
         }
 
 
-        final float x = ox - mTextRect.width() / 2;
-        final float y = oy + mTextRect.height() / 2;
+        final float x = ox - mTextWidth / 2.0f;
+        final float y = oy + mTextRect.height() / 2.0f;
 
         if (mOverrideTextColor != 0) {
             mTextPaint.setColor(mOverrideTextColor);

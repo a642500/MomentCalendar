@@ -96,7 +96,7 @@ public class DayView extends ImageView implements View.OnClickListener {
     }
 
     void onBind(Calendar calendar) {
-        removeOverrideTextColor();
+//        removeOverrideTextColor();
     }
 
     private void init(int day) {

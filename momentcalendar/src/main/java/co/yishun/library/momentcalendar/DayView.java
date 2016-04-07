@@ -99,7 +99,12 @@ public class DayView extends ImageView implements View.OnClickListener {
 //        removeOverrideTextColor();
     }
 
+    public String getDay() {
+        return day;
+    }
+
     private void init(int day) {
+
         setWillNotDraw(false);
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBackgroundPaint.setColor(ORANGE_TRANSPARENT);

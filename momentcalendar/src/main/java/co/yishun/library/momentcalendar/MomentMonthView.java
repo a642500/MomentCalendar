@@ -31,12 +31,22 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
         mItemParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
 
+    /**
+     * @return the copy of calendar of this month, only year and month is vaild.
+     */
+    public Calendar getMonthCalendar() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mCalendar.getTime());
+        return calendar;
+    }
+
     private void invalidateCalendar() {
         mMonthTitle = new SimpleDateFormat("yyyy/MM", Locale.getDefault()).format(mCalendar.getTime());
         mWeekNum = mCalendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
     }
 
-    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //        int rw = MeasureSpec.getSize(widthMeasureSpec);
         ////        int rh = MeasureSpec.getSize(heightMeasureSpec);
         //        int w = rw - getPaddingLeft() - getPaddingRight();
@@ -54,7 +64,8 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 
         if (mAdapter == null) {
             return;
@@ -74,7 +85,8 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
 
     }
 
-    @Override protected void onDraw(Canvas canvas) {
+    @Override
+    protected void onDraw(Canvas canvas) {
         float ox = canvas.getWidth() / 2 - mParent.mMonthTitleMeasureRect.width() / 2;
         float oy = mParent.mMonthTitleMeasureRect.height() + mParent.mMonthTitlePadding;
         canvas.drawText(mMonthTitle, ox, oy, mParent.mMonthTitlePaint);
@@ -103,19 +115,23 @@ public class MomentMonthView extends AdapterView<InternalMonthAdapter> {
         }
     }
 
-    @Override public InternalMonthAdapter getAdapter() {
+    @Override
+    public InternalMonthAdapter getAdapter() {
         return mAdapter;
     }
 
-    @Override public void setAdapter(InternalMonthAdapter adapter) {
+    @Override
+    public void setAdapter(InternalMonthAdapter adapter) {
         throw new UnsupportedOperationException("You cannot call this.");
     }
 
-    @Override public View getSelectedView() {
+    @Override
+    public View getSelectedView() {
         return null;
     }
 
-    @Override public void setSelection(int position) {
+    @Override
+    public void setSelection(int position) {
 
     }
 
